@@ -40,7 +40,6 @@ struct DraggableBottomSheet<Content: View>: View {
     
     @State private var height: CGFloat = 0
     @State private var dragStartHeight: CGFloat = 0
-    private let initialHeight: CGFloat
     private var backgroundColor: Color = .white
     
     init(
@@ -50,7 +49,6 @@ struct DraggableBottomSheet<Content: View>: View {
     ) {
         self.minHeight = minHeight
         self.maxHeight = maxHeight
-        self.initialHeight = minHeight
         self.content = content()
     }
 
@@ -103,11 +101,14 @@ struct DraggableBottomSheet<Content: View>: View {
             UnevenRoundedRectangle(cornerRadii: .init(topLeading: 40, topTrailing: 40))
         )
         .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: -2)
-        .onAppear {
-            height = initialHeight
-        }
-        .onChange(of: initialHeight) { newValue in
-            height = newValue
+        .onChange(of: minHeight) { newValue in
+            if height == 0 {
+                height = newValue
+            } else {
+                withAnimation {
+                    height = newValue
+                }
+            }
         }
     }
     
